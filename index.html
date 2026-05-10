@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a1a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Smetra">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<title>Smetra</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#1a1a1a;--bg2:#242424;--bg3:#2e2e2e;--bg4:#383838;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#686868;
+  --border:#3a3a3a;--border2:#484848;
+  --accent:#e8e0d0;--accent2:#c8bfaf;
+  --radius:10px;--radius-sm:8px;
+  --safe-top:env(safe-area-inset-top);
+  --safe-bot:env(safe-area-inset-bottom);
+}
+html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;color:var(--text)}
+.app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+.screen{display:none;flex-direction:column;height:100vh;overflow:hidden}
+.screen.active{display:flex}
+.header{padding:16px 16px 12px;padding-top:calc(16px + var(--safe-top));border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg);flex-shrink:0}
+.header-back{background:none;border:none;cursor:pointer;color:var(--text2);font-size:22px;padding:0;line-height:1;display:flex;align-items:center}
+.header h2{font-size:17px;font-weight:500;color:var(--text);flex:1}
+.header-logo{font-size:20px;font-weight:600;color:var(--text);letter-spacing:-0.5px}
+.header-logo span{color:var(--text3)}
+.scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.form-body{padding:16px}
+.section-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;margin-top:20px}
+.section-label:first-child{margin-top:0}
+.input-row{display:flex;gap:10px;margin-bottom:12px}
+.input-group{flex:1}
+.input-group label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px}
+.input-group input{width:100%;padding:11px 12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--bg2);color:var(--text);outline:none;-webkit-appearance:none}
+.input-group input:focus{border-color:var(--border2)}
+.auto-field{background:var(--bg3)!important;color:var(--text2)!important}
+.auto-field:focus{background:var(--bg2)!important;color:var(--text)!important}
+.hint{font-size:11px;color:var(--text3);margin-top:-8px;margin-bottom:12px;display:flex;align-items:center;gap:4px}
+.room-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px}
+.room-btn{padding:12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);cursor:pointer;font-size:15px;color:var(--text2);text-align:center;-webkit-appearance:none}
+.room-btn.selected{border-color:var(--accent2);color:var(--accent);background:var(--bg3)}
+.profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.profile-btn{padding:11px 6px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);cursor:pointer;font-size:13px;color:var(--text2);text-align:center;-webkit-appearance:none}
+.profile-btn.selected{border-color:var(--accent2);color:var(--accent);background:var(--bg3)}
+.extra-block{background:var(--bg2);border-radius:var(--radius-sm);border:0.5px solid var(--border);padding:12px;margin-top:12px;display:none}
+.extra-block.show{display:block}
+.extra-row{display:flex;align-items:center;gap:10px}
+.extra-row label{font-size:13px;color:var(--text2);flex:1}
+.extra-row input{width:90px;padding:10px 12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--bg3);color:var(--text);outline:none;-webkit-appearance:none}
+.extra-unit{font-size:13px;color:var(--text3)}
+.auto-preview{background:var(--bg2);border-radius:var(--radius-sm);border:0.5px solid var(--border);padding:12px;margin-top:12px}
+.auto-preview-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.auto-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid var(--border)}
+.auto-row:last-child{border-bottom:none;padding-bottom:0}
+.auto-name{font-size:13px;color:var(--text2);flex:1;padding-right:8px}
+.auto-price{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap}
+.footer-bar{padding:12px 16px;padding-bottom:calc(12px + var(--safe-bot));border-top:0.5px solid var(--border);background:var(--bg);flex-shrink:0}
+.btn-primary{width:100%;padding:14px;background:var(--accent);color:#1a1a1a;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;-webkit-appearance:none}
+.btn-primary:active{opacity:0.85}
+.add-section-btn{width:100%;padding:12px;border:0.5px dashed var(--border2);border-radius:var(--radius-sm);background:none;cursor:pointer;color:var(--text2);font-size:14px;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px}
+.panel{background:var(--bg2);border-radius:var(--radius-sm);border:0.5px solid var(--border);padding:12px;margin-bottom:8px;display:none}
+.panel.open{display:block}
+.items-list{margin-bottom:8px}
+.item-row{display:flex;align-items:center;gap:8px;padding:11px 0;border-bottom:0.5px solid var(--border)}
+.item-name{flex:1;font-size:14px;color:var(--text);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.item-tag{font-size:10px;background:var(--bg3);color:var(--text3);border-radius:4px;padding:2px 6px;flex-shrink:0}
+.item-qty{font-size:12px;color:var(--text2);min-width:55px;text-align:right;white-space:nowrap}
+.item-price{font-size:14px;font-weight:500;color:var(--text);min-width:75px;text-align:right;white-space:nowrap}
+.item-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:4px;flex-shrink:0}
+.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.brand-btn{padding:10px 6px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;-webkit-appearance:none}
+.brand-btn.selected{border-color:var(--accent2);color:var(--accent)}
+.sub-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:7px}
+.type-list{display:none}
+.type-list.active{display:block}
+.type-btn{width:100%;padding:10px 12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);text-align:left;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;-webkit-appearance:none}
+.type-btn.selected{border-color:var(--accent2);color:var(--accent)}
+.type-price{font-size:12px;color:var(--text3)}
+.qty-block{margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);display:none}
+.qty-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.qty-row label{font-size:13px;color:var(--text2);white-space:nowrap}
+.qty-row input{flex:1;padding:10px 12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--bg3);color:var(--text);outline:none;-webkit-appearance:none}
+.qty-unit{font-size:13px;color:var(--text3);white-space:nowrap}
+.backlight-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:11px 12px;background:var(--bg3);border-radius:var(--radius-sm);border:0.5px solid var(--border)}
+.backlight-label{font-size:14px;color:var(--text)}
+.backlight-extra{font-size:12px;color:var(--text3);margin-top:2px}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--bg4);border-radius:12px;cursor:pointer;transition:background 0.2s}
+.toggle input:checked+.toggle-slider{background:var(--accent)}
+.toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:var(--text2);border-radius:50%;transition:transform 0.2s}
+.toggle input:checked+.toggle-slider:before{transform:translateX(20px);background:#1a1a1a}
+.price-preview{font-size:13px;color:var(--text2);text-align:right;margin-bottom:8px}
+.add-btn{width:100%;padding:11px;background:var(--bg4);color:var(--text);border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;-webkit-appearance:none}
+.light-item{display:flex;align-items:center;padding:11px 12px;font-size:14px;color:var(--text2);cursor:pointer;border-radius:6px}
+.light-item.selected{background:var(--bg3);color:var(--text)}
+.divider{height:0.5px;background:var(--border);margin:4px 0}
+.light-qty-block{display:none;padding-top:8px;border-top:0.5px solid var(--border);margin-top:8px}
+.light-qty-row{display:flex;align-items:center;gap:8px;padding:4px 0 8px}
+.light-qty-row label{font-size:13px;color:var(--text2);flex:1}
+.light-qty-row input{width:90px;padding:9px 10px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:var(--bg3);color:var(--text);outline:none;-webkit-appearance:none}
+.room-total-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;border-top:0.5px solid var(--border);margin-top:8px}
+.room-total-label{font-size:14px;color:var(--text2)}
+.room-total-amount{font-size:20px;font-weight:500;color:var(--text)}
+.room-card{background:var(--bg2);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;border:0.5px solid var(--border)}
+.room-card-name{font-size:16px;font-weight:500;color:var(--text)}
+.room-card-summary{font-size:12px;color:var(--text3);margin-top:3px}
+.room-card-price{font-size:16px;font-weight:500;color:var(--text);white-space:nowrap}
+.room-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;padding:4px;margin-left:8px}
+.total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.total-label{font-size:14px;color:var(--text2)}
+.total-amount{font-size:28px;font-weight:600;color:var(--text)}
+.add-room-btn{width:100%;padding:14px;border:0.5px dashed var(--border2);border-radius:var(--radius-sm);background:none;cursor:pointer;color:var(--text2);font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;-webkit-appearance:none}
+.bottom-btns{display:flex;gap:8px}
+.bottom-btn{flex:1;padding:13px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:6px;-webkit-appearance:none}
+.bottom-btn.primary{background:var(--accent);color:#1a1a1a;border-color:var(--accent);font-weight:600}
+.estimate-box{background:var(--bg2);border-radius:var(--radius);border:0.5px solid var(--border);padding:16px;margin-bottom:16px}
+.est-header{display:flex;justify-content:space-between;margin-bottom:4px}
+.est-company{font-size:16px;font-weight:600;color:var(--text)}
+.est-date{font-size:12px;color:var(--text3)}
+.est-client{font-size:13px;color:var(--text2);margin-bottom:14px}
+.est-room{margin-bottom:12px}
+.est-room-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px}
+.est-line{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:3px}
+.est-room-total{display:flex;justify-content:space-between;font-size:14px;font-weight:500;color:var(--text);padding-top:6px;border-top:0.5px solid var(--border);margin-top:6px}
+.est-grand{display:flex;justify-content:space-between;font-size:18px;font-weight:600;color:var(--text);padding-top:14px;border-top:0.5px solid var(--border2);margin-top:10px}
+.action-btns{display:flex;gap:8px;margin-bottom:10px}
+.action-btn{flex:1;padding:13px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);cursor:pointer;font-size:13px;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:5px;-webkit-appearance:none}
+.action-btn.primary{background:var(--accent);color:#1a1a1a;border-color:var(--accent);font-weight:600}
+.client-input{width:100%;padding:12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--bg2);color:var(--text);margin-bottom:12px;outline:none;-webkit-appearance:none}
+.empty-msg{font-size:14px;color:var(--text3);padding:32px 0;text-align:center}
+.custom-inputs{display:flex;gap:8px;margin-bottom:8px}
+.custom-inputs .input-group input{padding:10px 12px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ГЛАВНЫЙ ЭКРАН -->
+<div id="s-main" class="screen active">
+  <div class="header"><span class="header-logo">Smetra</span></div>
+  <div class="scroll-body">
+    <div style="padding:12px" id="rooms-container">
+      <div class="empty-msg">Добавьте первую комнату</div>
+    </div>
+    <div style="padding:0 12px 12px">
+      <button class="add-room-btn" onclick="showScreen('s-room');resetForm()">
+        + Добавить комнату
+      </button>
+    </div>
+  </div>
+  <div class="footer-bar">
+    <div class="total-row">
+      <span class="total-label">Итого по смете</span>
+      <span class="total-amount" id="grand-total">0 ₽</span>
+    </div>
+    <div class="bottom-btns">
+      <button class="bottom-btn" onclick="showScreen('s-send')">↗ Отправить</button>
+      <button class="bottom-btn primary" onclick="showScreen('s-send')">✎ Редактировать цены</button>
+    </div>
+  </div>
+</div>
+
+<!-- ДОБАВИТЬ КОМНАТУ -->
+<div id="s-room" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="showScreen('s-main')">←</button>
+    <h2>Добавить комнату</h2>
+  </div>
+  <div class="scroll-body">
+    <div class="form-body">
+      <div class="section-label">Комната</div>
+      <div class="room-grid">
+        <button class="room-btn selected" onclick="selRoom(this)">Зал</button>
+        <button class="room-btn" onclick="selRoom(this)">Кухня</button>
+        <button class="room-btn" onclick="selRoom(this)">Спальня</button>
+        <button class="room-btn" onclick="selRoom(this)">Детская</button>
+        <button class="room-btn" onclick="selRoom(this)">Коридор</button>
+        <button class="room-btn" onclick="selRoom(this)">Санузел</button>
+      </div>
+
+      <div class="section-label">Размеры</div>
+      <div class="input-row">
+        <div class="input-group"><label>Длина (м)</label><input type="number" id="r-len" placeholder="0.0" step="0.1" inputmode="decimal" oninput="calcDims()"></div>
+        <div class="input-group"><label>Ширина (м)</label><input type="number" id="r-wid" placeholder="0.0" step="0.1" inputmode="decimal" oninput="calcDims()"></div>
+      </div>
+      <div class="input-row">
+        <div class="input-group"><label>Площадь (м²)</label><input type="number" id="r-area" class="auto-field" placeholder="0.0" step="0.1" inputmode="decimal" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Периметр (м.п.)</label><input type="number" id="r-perim" class="auto-field" placeholder="0.0" step="0.1" inputmode="decimal" oninput="updatePreview()"></div>
+      </div>
+      <div class="hint">ⓘ Можно скорректировать вручную</div>
+
+      <div class="section-label">Профиль</div>
+      <div class="profile-grid">
+        <button class="profile-btn" onclick="selProfile(this,'plastic')">Пластиковый</button>
+        <button class="profile-btn" onclick="selProfile(this,'aluminium')">Алюминиевый</button>
+        <button class="profile-btn selected" onclick="selProfile(this,'shadow')">Теневой</button>
+      </div>
+
+      <div class="extra-block show" id="corners-block">
+        <div class="extra-row">
+          <label>Количество углов</label>
+          <input type="number" id="r-corners" value="4" min="1" inputmode="numeric" oninput="updatePreview()">
+          <span class="extra-unit">шт</span>
+        </div>
+      </div>
+      <div class="extra-block show" id="floating-block">
+        <div class="extra-row">
+          <label>Парящий потолок</label>
+          <input type="number" id="r-floating" placeholder="0" step="0.1" inputmode="decimal" oninput="updatePreview()">
+          <span class="extra-unit">м.п.</span>
+        </div>
+      </div>
+
+      <div class="auto-preview">
+        <div class="auto-preview-label">В смету добавится автоматически</div>
+        <div id="auto-lines"><div style="font-size:13px;color:var(--text3)">Введите размеры</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bar">
+    <button class="btn-primary" onclick="goToKit()">Далее — комплектация →</button>
+  </div>
+</div>
+
+<!-- КОМПЛЕКТАЦИЯ -->
+<div id="s-kit" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="showScreen('s-room')">←</button>
+    <h2 id="kit-title">Комплектация</h2>
+  </div>
+  <div class="scroll-body">
+    <div class="form-body">
+      <div class="section-label">Позиции</div>
+      <div class="items-list" id="kit-items"></div>
+
+      <button class="add-section-btn" onclick="togglePanel('p-cornice')">+ Добавить карниз</button>
+      <div class="panel" id="p-cornice">
+        <div class="sub-label">Производитель</div>
+        <div class="brand-grid">
+          <button class="brand-btn" id="b-parsek" onclick="selBrand('parsek')">ПарСек</button>
+          <button class="brand-btn" id="b-flexy" onclick="selBrand('flexy')">Flexy</button>
+          <button class="brand-btn" id="b-lumfer" onclick="selBrand('lumfer')">Lumfer</button>
+        </div>
+        <div id="c-hint" style="display:none" class="sub-label">Тип карниза</div>
+        <div class="type-list" id="tl-parsek">
+          <button class="type-btn" onclick="selCorn(this,'ПарСек ПК-5',3600)">ПК-5<span class="type-price">3 600 ₽/м.п.</span></button>
+          <button class="type-btn" onclick="selCorn(this,'ПарСек ПК-14',3400)">ПК-14<span class="type-price">3 400 ₽/м.п.</span></button>
+        </div>
+        <div class="type-list" id="tl-flexy">
+          <button class="type-btn" onclick="selCorn(this,'Flexy Гардина 02',3900)">Гардина 02<span class="type-price">3 900 ₽/м.п.</span></button>
+        </div>
+        <div class="type-list" id="tl-lumfer">
+          <button class="type-btn" onclick="selCorn(this,'Lumfer Uk',3950)">Uk<span class="type-price">3 950 ₽/м.п.</span></button>
+          <button class="type-btn" onclick="selCorn(this,'Lumfer Novus',6100)">Novus<span class="type-price">6 100 ₽/м.п.</span></button>
+          <button class="type-btn" onclick="selCorn(this,'Lumfer Magnum',8200)">Magnum<span class="type-price">8 200 ₽/м.п.</span></button>
+        </div>
+        <div class="qty-block" id="c-qty-block">
+          <div class="qty-row"><label>Количество</label><input type="number" id="c-qty" placeholder="0" step="0.1" inputmode="decimal" oninput="updateCornPreview()"><span class="qty-unit">м.п.</span></div>
+          <div class="backlight-row">
+            <div><div class="backlight-label">Подсветка в карниз</div><div class="backlight-extra">+1 100 ₽/м.п.</div></div>
+            <label class="toggle"><input type="checkbox" id="c-bl" onchange="updateCornPreview()"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="price-preview" id="c-preview"></div>
+          <button class="add-btn" onclick="addCornice()">Добавить в смету</button>
+        </div>
+      </div>
+
+      <button class="add-section-btn" onclick="togglePanel('p-light')">+ Добавить освещение</button>
+      <div class="panel" id="p-light">
+        <div class="sub-label">Установка освещения</div>
+        <div class="light-item" onclick="selLight('споты')">☀ Установка спотов</div>
+        <div class="divider"></div>
+        <div class="light-item" onclick="selLight('люстра')">💡 Установка люстры</div>
+        <div class="divider"></div>
+        <div class="light-item" onclick="selLight('точечные')">◎ Установка точечных светильников</div>
+        <div class="divider"></div>
+        <div class="light-item" onclick="selLight('bh53')">◎ Установка светильника BH 53</div>
+        <div class="sub-label" style="margin-top:8px">Системы</div>
+        <div class="light-item" onclick="selLight('линии')">— Световые линии</div>
+        <div class="divider"></div>
+        <div class="light-item" onclick="selLight('магнит')">⊕ Магнитная система</div>
+        <div class="light-qty-block" id="l-qty-block">
+          <div class="light-qty-row"><label id="l-label">Количество</label><input type="number" id="l-qty" placeholder="0" step="0.1" inputmode="decimal" oninput="updateLightPreview()"><span class="qty-unit" id="l-unit">шт</span></div>
+          <div class="price-preview" id="l-preview"></div>
+          <button class="add-btn" onclick="addLight()">Добавить в смету</button>
+        </div>
+      </div>
+
+      <button class="add-section-btn" onclick="togglePanel('p-custom')">+ Добавить другое</button>
+      <div class="panel" id="p-custom">
+        <div class="custom-inputs">
+          <div class="input-group" style="flex:2"><label>Название</label><input type="text" id="cu-name" placeholder="Услуга"></div>
+          <div class="input-group" style="flex:1"><label>Кол-во</label><input type="number" id="cu-qty" placeholder="1" inputmode="numeric"></div>
+          <div class="input-group" style="flex:1"><label>Цена ₽</label><input type="number" id="cu-price" placeholder="0" inputmode="numeric"></div>
+        </div>
+        <button class="add-btn" onclick="addCustom()">Добавить</button>
+      </div>
+
+      <div class="room-total-bar">
+        <span class="room-total-label">Итого по комнате</span>
+        <span class="room-total-amount" id="kit-total">0 ₽</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bar">
+    <button class="btn-primary" onclick="saveRoom()">✓ Сохранить комнату</button>
+  </div>
+</div>
+
+<!-- ОТПРАВИТЬ КЛИЕНТУ -->
+<div id="s-send" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="showScreen('s-main')">←</button>
+    <h2>Смета клиенту</h2>
+  </div>
+  <div class="scroll-body">
+    <div class="form-body">
+      <div class="section-label">Клиент</div>
+      <input type="text" class="client-input" id="client-name" placeholder="Имя клиента" oninput="buildEstimate()">
+      <input type="tel" class="client-input" id="client-phone" placeholder="Телефон" inputmode="tel">
+      <div class="section-label">Предпросмотр сметы</div>
+      <div class="estimate-box" id="estimate-preview"></div>
+      <div class="action-btns">
+        <button class="action-btn" onclick="alert('PDF будет в финальной версии')">📄 PDF</button>
+        <button class="action-btn primary" onclick="shareWhatsApp()">WhatsApp</button>
+        <button class="action-btn" onclick="shareTelegram()">Telegram</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+var rooms=[];
+var cur={name:'Зал',profile:'shadow',area:0,perim:0,corners:4,floating:0,items:[]};
+var cornType=null,cornPrice=0,lightName=null,lightPrice=0,lightUnit='шт';
+var profiles={plastic:{label:'Пластиковый профиль',price:70},aluminium:{label:'Алюминиевый профиль',price:150},shadow:{label:'Теневой профиль',price:1100}};
+var lights={'споты':{name:'Установка спотов',price:600,unit:'шт'},'люстра':{name:'Установка люстры',price:1000,unit:'шт'},'точечные':{name:'Установка точечных светильников',price:600,unit:'шт'},'bh53':{name:'Установка светильника BH 53',price:2400,unit:'шт'},'линии':{name:'Световые линии',price:2400,unit:'м.п.'},'магнит':{name:'Магнитная система',price:9100,unit:'м.п.'}};
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='s-send')buildEstimate();}
+function resetForm(){cur={name:'Зал',profile:'shadow',area:0,perim:0,corners:4,floating:0,items:[]};['r-len','r-wid','r-area','r-perim','r-floating'].forEach(id=>document.getElementById(id).value='');document.getElementById('r-corners').value=4;document.querySelectorAll('.room-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));document.querySelectorAll('.profile-btn').forEach((b,i)=>b.classList.toggle('selected',i===2));document.getElementById('corners-block').classList.add('show');document.getElementById('floating-block').classList.add('show');updatePreview();}
+function selRoom(btn){btn.closest('.room-grid').querySelectorAll('.room-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');cur.name=btn.textContent;}
+function selProfile(btn,type){btn.closest('.profile-grid').querySelectorAll('.profile-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');cur.profile=type;document.getElementById('corners-block').classList.toggle('show',type==='shadow');updatePreview();}
+function calcDims(){const l=parseFloat(document.getElementById('r-len').value)||0,w=parseFloat(document.getElementById('r-wid').value)||0;if(l>0&&w>0){document.getElementById('r-area').value=parseFloat((l*w).toFixed(2));document.getElementById('r-perim').value=parseFloat((2*(l+w)).toFixed(2));}updatePreview();}
+function updatePreview(){const area=parseFloat(document.getElementById('r-area').value)||0,perim=parseFloat(document.getElementById('r-perim').value)||0,corners=parseInt(document.getElementById('r-corners').value)||0,floating=parseFloat(document.getElementById('r-floating').value)||0,pd=profiles[cur.profile],ep=Math.max(0,parseFloat((perim-floating).toFixed(2)));let h='';if(area>0)h+=ar('Натяжной потолок '+area+' м²',Math.round(area*550));if(floating>0)h+=ar('Парящий потолок '+floating+' м.п.',Math.round(floating*2400));if(perim>0){const lbl=floating>0?pd.label+' '+ep+' м.п. ('+perim+'−'+floating+')':pd.label+' '+perim+' м.п.';h+=ar(lbl,Math.round(ep*pd.price));}if(cur.profile==='shadow'&&corners>0)h+=ar('Обработка углов '+corners+' шт',Math.round(corners*400));document.getElementById('auto-lines').innerHTML=h||'<div style="font-size:13px;color:var(--text3)">Введите размеры</div>';}
+function ar(n,p){return'<div class="auto-row"><span class="auto-name">'+n+'</span><span class="auto-price">'+p.toLocaleString('ru-RU')+' ₽</span></div>';}
+function goToKit(){const area=parseFloat(document.getElementById('r-area').value)||0,perim=parseFloat(document.getElementById('r-perim').value)||0,corners=parseInt(document.getElementById('r-corners').value)||0,floating=parseFloat(document.getElementById('r-floating').value)||0,ep=Math.max(0,parseFloat((perim-floating).toFixed(2))),pd=profiles[cur.profile];cur.area=area;cur.perim=perim;cur.corners=corners;cur.floating=floating;cur.items=[];if(area>0)cur.items.push({name:'Натяжной потолок',qty:area+' м²',total:Math.round(area*550),auto:true});if(floating>0)cur.items.push({name:'Парящий потолок',qty:floating+' м.п.',total:Math.round(floating*2400),auto:true});if(perim>0)cur.items.push({name:pd.label,qty:ep+' м.п.',total:Math.round(ep*pd.price),auto:true});if(cur.profile==='shadow'&&corners>0)cur.items.push({name:'Обработка углов',qty:corners+' шт',total:Math.round(corners*400),auto:true});document.getElementById('kit-title').textContent=cur.name+' — комплектация';renderKit();showScreen('s-kit');}
+function togglePanel(id){const el=document.getElementById(id),was=el.classList.contains('open');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));if(!was)el.classList.add('open');}
+function selBrand(b){document.querySelectorAll('.brand-btn').forEach(x=>x.classList.remove('selected'));document.getElementById('b-'+b).classList.add('selected');document.querySelectorAll('.type-list').forEach(t=>t.classList.remove('active'));document.getElementById('tl-'+b).classList.add('active');document.getElementById('c-hint').style.display='block';document.getElementById('c-qty-block').style.display='none';document.querySelectorAll('.type-btn').forEach(x=>x.classList.remove('selected'));cornType=null;cornPrice=0;}
+function selCorn(btn,name,price){document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');cornType=name;cornPrice=price;document.getElementById('c-qty-block').style.display='block';document.getElementById('c-qty').value='';document.getElementById('c-bl').checked=false;document.getElementById('c-preview').textContent='';document.getElementById('c-qty').focus();}
+function updateCornPreview(){const qty=parseFloat(document.getElementById('c-qty').value)||0,bl=document.getElementById('c-bl').checked;if(qty>0&&cornType){const u=cornPrice+(bl?1100:0);document.getElementById('c-preview').textContent=qty+' м.п. × '+u.toLocaleString('ru-RU')+' ₽ = '+Math.round(qty*u).toLocaleString('ru-RU')+' ₽';}else document.getElementById('c-preview').textContent='';}
+function addCornice(){const qty=parseFloat(document.getElementById('c-qty').value)||0;if(!cornType||qty<=0)return;const bl=document.getElementById('c-bl').checked,u=cornPrice+(bl?1100:0),name=bl?cornType+' с подсветкой':cornType;addItem(name,qty+' м.п.',Math.round(qty*u));document.getElementById('p-cornice').classList.remove('open');document.getElementById('c-qty-block').style.display='none';document.querySelectorAll('.brand-btn,.type-btn').forEach(b=>b.classList.remove('selected'));document.querySelectorAll('.type-list').forEach(t=>t.classList.remove('active'));document.getElementById('c-hint').style.display='none';cornType=null;cornPrice=0;}
+function selLight(key){const d=lights[key];lightName=d.name;lightPrice=d.price;lightUnit=d.unit;document.querySelectorAll('.light-item').forEach(i=>i.classList.remove('selected'));event.currentTarget.classList.add('selected');document.getElementById('l-label').textContent=d.name;document.getElementById('l-unit').textContent=d.unit;document.getElementById('l-qty').value='';document.getElementById('l-preview').textContent='';document.getElementById('l-qty-block').style.display='block';document.getElementById('l-qty').focus();}
+function updateLightPreview(){const qty=parseFloat(document.getElementById('l-qty').value)||0;if(qty>0&&lightName)document.getElementById('l-preview').textContent=qty+' '+lightUnit+' × '+lightPrice.toLocaleString('ru-RU')+' ₽ = '+Math.round(qty*lightPrice).toLocaleString('ru-RU')+' ₽';else document.getElementById('l-preview').textContent='';}
+function addLight(){const qty=parseFloat(document.getElementById('l-qty').value)||0;if(!lightName||qty<=0)return;addItem(lightName,qty+' '+lightUnit,Math.round(qty*lightPrice));document.getElementById('p-light').classList.remove('open');document.getElementById('l-qty-block').style.display='none';document.querySelectorAll('.light-item').forEach(i=>i.classList.remove('selected'));lightName=null;}
+function addCustom(){const name=document.getElementById('cu-name').value||'Услуга',qty=parseFloat(document.getElementById('cu-qty').value)||1,price=parseFloat(document.getElementById('cu-price').value)||0;addItem(name,qty+' шт',Math.round(qty*price));document.getElementById('cu-name').value='';document.getElementById('cu-qty').value='';document.getElementById('cu-price').value='';document.getElementById('p-custom').classList.remove('open');}
+function addItem(name,qty,total){cur.items.push({name,qty,total,auto:false});renderKit();}
+function renderKit(){const list=document.getElementById('kit-items');list.innerHTML='';cur.items.forEach((item,i)=>{const row=document.createElement('div');row.className='item-row';row.innerHTML='<span class="item-name">'+item.name+(item.auto?'<span class="item-tag">авто</span>':'')+'</span><span class="item-qty">'+item.qty+'</span><span class="item-price">'+item.total.toLocaleString('ru-RU')+' ₽</span><button class="item-del" onclick="removeItem('+i+')">×</button>';list.appendChild(row);});document.getElementById('kit-total').textContent=cur.items.reduce((s,i)=>s+i.total,0).toLocaleString('ru-RU')+' ₽';}
+function removeItem(i){cur.items.splice(i,1);renderKit();}
+function saveRoom(){const total=cur.items.reduce((s,i)=>s+i.total,0);rooms.push({...cur,items:[...cur.items],total});renderRooms();updateTotal();showScreen('s-main');}
+function renderRooms(){const c=document.getElementById('rooms-container');c.innerHTML='';if(!rooms.length){c.innerHTML='<div class="empty-msg">Добавьте первую комнату</div>';return;}rooms.forEach((r,i)=>{const card=document.createElement('div');card.className='room-card';card.innerHTML='<div><div class="room-card-name">'+r.name+'</div><div class="room-card-summary">'+profiles[r.profile].label+' · '+r.area+' м² · '+r.items.length+' позиций</div></div><div style="display:flex;align-items:center"><span class="room-card-price">'+r.total.toLocaleString('ru-RU')+' ₽</span><button class="room-del" onclick="event.stopPropagation();delRoom('+i+')">🗑</button></div>';c.appendChild(card);});}
+function delRoom(i){rooms.splice(i,1);renderRooms();updateTotal();}
+function updateTotal(){document.getElementById('grand-total').textContent=rooms.reduce((s,r)=>s+r.total,0).toLocaleString('ru-RU')+' ₽';}
+
+function buildEstimate(){
+  const name=document.getElementById('client-name').value||'Клиент';
+  const date=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  const grand=rooms.reduce((s,r)=>s+r.total,0);
+  let h='<div class="est-header"><span class="est-company">Smetra</span><span class="est-date">'+date+'</span></div><div class="est-client">Клиент: '+name+'</div>';
+  if(!rooms.length){h+='<div style="font-size:13px;color:var(--text3);text-align:center;padding:16px 0">Комнаты не добавлены</div>';}
+  else{rooms.forEach(r=>{h+='<div class="est-room"><div class="est-room-name">'+r.name+'</div>';r.items.forEach(item=>{h+='<div class="est-line"><span>'+item.name+' '+item.qty+'</span><span>'+item.total.toLocaleString('ru-RU')+' ₽</span></div>';});h+='<div class="est-room-total"><span>'+r.name+'</span><span>'+r.total.toLocaleString('ru-RU')+' ₽</span></div></div>';});h+='<div class="est-grand"><span>Итого</span><span>'+grand.toLocaleString('ru-RU')+' ₽</span></div>';}
+  h+='<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--text3)">Благодарим за сотрудничество!</div>';
+  document.getElementById('estimate-preview').innerHTML=h;
+}
+
+function buildText(){
+  const name=document.getElementById('client-name').value||'Клиент';
+  const date=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  const grand=rooms.reduce((s,r)=>s+r.total,0);
+  let t='Смета Smetra\n'+date+'\nКлиент: '+name+'\n\n';
+  rooms.forEach(r=>{t+=r.name+':\n';r.items.forEach(item=>{t+='  '+item.name+' '+item.qty+' — '+item.total.toLocaleString('ru-RU')+' ₽\n';});t+='Итого '+r.name+': '+r.total.toLocaleString('ru-RU')+' ₽\n\n';});
+  t+='ИТОГО: '+grand.toLocaleString('ru-RU')+' ₽\nБлагодарим за сотрудничество!';
+  return t;
+}
+function shareWhatsApp(){const text=encodeURIComponent(buildText());window.open('https://wa.me/?text='+text,'_blank');}
+function shareTelegram(){const text=encodeURIComponent(buildText());window.open('https://t.me/share/url?text='+text,'_blank');}
+
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));}
+updatePreview();
+</script>
+</body>
+</html>

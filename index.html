@@ -112,8 +112,10 @@ html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .room-card-name{font-size:16px;font-weight:500;color:var(--text)}
 .room-card-summary{font-size:12px;color:var(--text3);margin-top:3px}
 .room-card-price{font-size:16px;font-weight:500;color:var(--text);white-space:nowrap}
-.room-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;padding:4px;margin-left:8px}
-.room-edit{background:none;border:none;cursor:pointer;color:var(--text2);font-size:16px;padding:4px;margin-left:4px}
+.room-actions{display:flex;align-items:center;gap:6px;margin-left:10px}
+.room-edit,.room-del{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.room-edit{background:var(--bg3);color:var(--text2)}
+.room-del{background:#2e1a1a;color:#d05050}
 .total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .total-label{font-size:14px;color:var(--text2)}
 .total-amount{font-size:28px;font-weight:600;color:var(--text)}
@@ -369,7 +371,7 @@ function addItem(name,qty,total){cur.items.push({name,qty,total,auto:false});ren
 function renderKit(){const list=document.getElementById('kit-items');list.innerHTML='';cur.items.forEach((item,i)=>{const row=document.createElement('div');row.className='item-row';row.innerHTML='<span class="item-name">'+item.name+(item.auto?'<span class="item-tag">авто</span>':'')+'</span><span class="item-qty">'+item.qty+'</span><span class="item-price">'+item.total.toLocaleString('ru-RU')+' ₽</span><button class="item-del" onclick="removeItem('+i+')">×</button>';list.appendChild(row);});document.getElementById('kit-total').textContent=cur.items.reduce((s,i)=>s+i.total,0).toLocaleString('ru-RU')+' ₽';}
 function removeItem(i){cur.items.splice(i,1);renderKit();}
 function saveRoom(){const total=cur.items.reduce((s,i)=>s+i.total,0);if(editingIndex>=0){rooms[editingIndex]={...cur,items:[...cur.items],total};editingIndex=-1;}else{rooms.push({...cur,items:[...cur.items],total});}renderRooms();updateTotal();showScreen('s-main');}
-function renderRooms(){const c=document.getElementById('rooms-container');c.innerHTML='';if(!rooms.length){c.innerHTML='<div class="empty-msg">Добавьте первую комнату</div>';return;}rooms.forEach((r,i)=>{const card=document.createElement('div');card.className='room-card';card.innerHTML='<div><div class="room-card-name">'+r.name+'</div><div class="room-card-summary">'+profiles[r.profile].label+' · '+r.area+' м² · '+r.items.length+' позиций</div></div><div style="display:flex;align-items:center"><span class="room-card-price">'+r.total.toLocaleString('ru-RU')+' ₽</span><button class="room-edit" onclick="event.stopPropagation();editRoom('+i+')" title="Редактировать">✎</button><button class="room-del" onclick="event.stopPropagation();delRoom('+i+')">🗑</button></div>';c.appendChild(card);});}
+function renderRooms(){const c=document.getElementById('rooms-container');c.innerHTML='';if(!rooms.length){c.innerHTML='<div class="empty-msg">Добавьте первую комнату</div>';return;}rooms.forEach((r,i)=>{const card=document.createElement('div');card.className='room-card';card.innerHTML='<div><div class="room-card-name">'+r.name+'</div><div class="room-card-summary">'+profiles[r.profile].label+' · '+r.area+' м² · '+r.items.length+' позиций</div></div><div style="display:flex;align-items:center"><span class="room-card-price">'+r.total.toLocaleString('ru-RU')+' ₽</span><div class="room-actions"><button class="room-edit" onclick="event.stopPropagation();editRoom('+i+')">✎</button><button class="room-del" onclick="event.stopPropagation();delRoom('+i+')">✕</button></div></div>';c.appendChild(card);});}
 function delRoom(i){rooms.splice(i,1);renderRooms();updateTotal();}
 function updateTotal(){document.getElementById('grand-total').textContent=rooms.reduce((s,r)=>s+r.total,0).toLocaleString('ru-RU')+' ₽';}
 

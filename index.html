@@ -140,6 +140,15 @@ html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .empty-msg{font-size:14px;color:var(--text3);padding:32px 0;text-align:center}
 .custom-inputs{display:flex;gap:8px;margin-bottom:8px}
 .custom-inputs .input-group input{padding:10px 12px;font-size:14px}
+@media print{
+  :root{--text:#111;--text2:#444;--text3:#777;--border:#ddd;--border2:#bbb}
+  body{background:#fff}
+  .app{display:none!important}
+  #print-area{display:block!important;padding:10mm 15mm;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Arial,sans-serif;color:#111}
+  #print-area .estimate-box{background:#fff;border:none;padding:0;margin:0}
+  #print-area .est-grand{border-top:1.5px solid #333}
+  #print-area .est-room-total{border-top:0.5px solid #999}
+}
 </style>
 </head>
 <body>
@@ -331,7 +340,7 @@ html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSys
       <div class="section-label">Предпросмотр сметы</div>
       <div class="estimate-box" id="estimate-preview"></div>
       <div class="action-btns">
-        <button class="action-btn" onclick="alert('PDF будет в финальной версии')">📄 PDF</button>
+        <button class="action-btn" onclick="exportPDF()">📄 PDF</button>
         <button class="action-btn primary" onclick="shareWhatsApp()">WhatsApp</button>
         <button class="action-btn" onclick="shareTelegram()">Telegram</button>
       </div>
@@ -340,6 +349,7 @@ html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSys
 </div>
 
 </div>
+<div id="print-area" style="display:none"></div>
 
 <script>
 var rooms=[];
@@ -397,6 +407,7 @@ function buildText(){
 }
 function shareWhatsApp(){const text=encodeURIComponent(buildText());window.open('https://wa.me/?text='+text,'_blank');}
 function shareTelegram(){const text=encodeURIComponent(buildText());window.open('https://t.me/share/url?text='+text,'_blank');}
+function exportPDF(){buildEstimate();document.getElementById('print-area').innerHTML='<div class="estimate-box">'+document.getElementById('estimate-preview').innerHTML+'</div>';window.print();}
 
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));}
 updatePreview();

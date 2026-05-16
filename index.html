@@ -313,6 +313,25 @@ html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSys
         </div>
       </div>
 
+      <button class="add-section-btn" onclick="togglePanel('p-acc')">+ Добавить аксессуары</button>
+      <div class="panel" id="p-acc">
+        <div class="sub-label">Установка теневой вытяжки</div>
+        <div class="light-item" onclick="selAcc(event,'вытяжка-без')">Без вентилятора</div>
+        <div class="divider"></div>
+        <div class="light-item" onclick="selAcc(event,'вытяжка-с')">С вентилятором</div>
+        <div class="sub-label" style="margin-top:8px">Прочее</div>
+        <div class="light-item" onclick="selAcc(event,'шторка')">Шторка для ванны</div>
+        <div class="divider"></div>
+        <div class="light-item" onclick="selAcc(event,'решетка')">Вентиляционная решетка, декоративная</div>
+        <div class="divider"></div>
+        <div class="light-item" onclick="selAcc(event,'доступ')">Быстрый доступ к блокам питания, магнитный</div>
+        <div class="light-qty-block" id="a-qty-block">
+          <div class="light-qty-row"><label id="a-label">Количество</label><input type="number" id="a-qty" placeholder="0" step="0.1" inputmode="decimal" oninput="updateAccPreview()"><span class="qty-unit" id="a-unit">шт</span></div>
+          <div class="price-preview" id="a-preview"></div>
+          <button class="add-btn" onclick="addAcc()">Добавить в смету</button>
+        </div>
+      </div>
+
       <button class="add-section-btn" onclick="togglePanel('p-custom')">+ Добавить другое</button>
       <div class="panel" id="p-custom">
         <div class="custom-inputs">
@@ -367,6 +386,8 @@ var cornType=null,cornPrice=0,lightName=null,lightPrice=0,lightUnit='шт';
 var profiles={plastic:{label:'Пластиковый профиль',price:70},aluminium:{label:'Алюминиевый профиль',price:150},shadow:{label:'Теневой профиль',price:1100}};
 var filmPrices={MSD:550,BAUF:750};
 var lights={'споты':{name:'Установка спотов',price:600,unit:'шт'},'люстра':{name:'Установка люстры',price:1000,unit:'шт'},'точечные':{name:'Установка точечных светильников',price:600,unit:'шт'},'bh53':{name:'Установка светильника BH 53',price:2400,unit:'шт'},'линии':{name:'Световые линии',price:2400,unit:'м.п.'},'магнит':{name:'Магнитная система',price:9100,unit:'м.п.'}};
+var accName=null,accPrice=0,accUnit='шт';
+var accessories={'вытяжка-без':{name:'Установка теневой вытяжки (без вентилятора)',price:4900,unit:'шт'},'вытяжка-с':{name:'Установка теневой вытяжки (с вентилятором)',price:8500,unit:'шт'},'шторка':{name:'Шторка для ванны',price:3200,unit:'п.м.'},'решетка':{name:'Вентиляционная решетка декоративная',price:1200,unit:'шт'},'доступ':{name:'Быстрый доступ к блокам питания магнитный',price:2600,unit:'шт'}};
 
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='s-send')buildEstimate();}
 function resetForm(){editingIndex=-1;cur={name:'Зал',film:'MSD',profile:'plastic',length:0,width:0,area:0,perim:0,corners:4,floating:0,items:[]};['r-len','r-wid','r-area','r-perim','r-floating'].forEach(id=>document.getElementById(id).value='');document.getElementById('r-corners').value=4;document.querySelectorAll('.room-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));document.getElementById('film-grid').querySelectorAll('.profile-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));document.querySelectorAll('.profile-grid .profile-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));document.getElementById('corners-block').classList.remove('show');document.getElementById('floating-block').classList.add('show');updatePreview();}
@@ -385,6 +406,9 @@ function updateCornPreview(){const qty=parseFloat(document.getElementById('c-qty
 function addCornice(){const qty=parseFloat(document.getElementById('c-qty').value)||0;if(!cornType||qty<=0)return;const bl=document.getElementById('c-bl').checked,u=cornPrice+(bl?1100:0),name=bl?cornType+' с подсветкой':cornType;addItem(name,qty+' м.п.',Math.round(qty*u));document.getElementById('p-cornice').classList.remove('open');document.getElementById('c-qty-block').style.display='none';document.querySelectorAll('.brand-btn,.type-btn').forEach(b=>b.classList.remove('selected'));document.querySelectorAll('.type-list').forEach(t=>t.classList.remove('active'));document.getElementById('c-hint').style.display='none';cornType=null;cornPrice=0;}
 function selLight(key){const d=lights[key];lightName=d.name;lightPrice=d.price;lightUnit=d.unit;document.querySelectorAll('.light-item').forEach(i=>i.classList.remove('selected'));event.currentTarget.classList.add('selected');document.getElementById('l-label').textContent=d.name;document.getElementById('l-unit').textContent=d.unit;document.getElementById('l-qty').value='';document.getElementById('l-preview').textContent='';document.getElementById('l-qty-block').style.display='block';document.getElementById('l-qty').focus();}
 function updateLightPreview(){const qty=parseFloat(document.getElementById('l-qty').value)||0;if(qty>0&&lightName)document.getElementById('l-preview').textContent=qty+' '+lightUnit+' × '+lightPrice.toLocaleString('ru-RU')+' ₽ = '+Math.round(qty*lightPrice).toLocaleString('ru-RU')+' ₽';else document.getElementById('l-preview').textContent='';}
+function selAcc(e,key){const d=accessories[key];accName=d.name;accPrice=d.price;accUnit=d.unit;document.querySelectorAll('#p-acc .light-item').forEach(i=>i.classList.remove('selected'));e.currentTarget.classList.add('selected');document.getElementById('a-label').textContent=d.name;document.getElementById('a-unit').textContent=d.unit;document.getElementById('a-qty').value='';document.getElementById('a-preview').textContent='';document.getElementById('a-qty-block').style.display='block';document.getElementById('a-qty').focus();}
+function updateAccPreview(){const qty=parseFloat(document.getElementById('a-qty').value)||0;if(qty>0&&accName)document.getElementById('a-preview').textContent=qty+' '+accUnit+' × '+accPrice.toLocaleString('ru-RU')+' ₽ = '+Math.round(qty*accPrice).toLocaleString('ru-RU')+' ₽';else document.getElementById('a-preview').textContent='';}
+function addAcc(){const qty=parseFloat(document.getElementById('a-qty').value)||0;if(!accName||qty<=0)return;addItem(accName,qty+' '+accUnit,Math.round(qty*accPrice));document.getElementById('p-acc').classList.remove('open');document.getElementById('a-qty-block').style.display='none';document.querySelectorAll('#p-acc .light-item').forEach(i=>i.classList.remove('selected'));accName=null;}
 function addLight(){const qty=parseFloat(document.getElementById('l-qty').value)||0;if(!lightName||qty<=0)return;addItem(lightName,qty+' '+lightUnit,Math.round(qty*lightPrice));document.getElementById('p-light').classList.remove('open');document.getElementById('l-qty-block').style.display='none';document.querySelectorAll('.light-item').forEach(i=>i.classList.remove('selected'));lightName=null;}
 function addCustom(){const name=document.getElementById('cu-name').value||'Услуга',qty=parseFloat(document.getElementById('cu-qty').value)||1,price=parseFloat(document.getElementById('cu-price').value)||0;addItem(name,qty+' шт',Math.round(qty*price));document.getElementById('cu-name').value='';document.getElementById('cu-qty').value='';document.getElementById('cu-price').value='';document.getElementById('p-custom').classList.remove('open');}
 function addItem(name,qty,total){cur.items.push({name,qty,total,auto:false});renderKit();}

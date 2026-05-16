@@ -309,7 +309,7 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
         <div class="sub-label" style="margin-top:8px">Системы</div>
         <div class="light-item" onclick="selLight('линии')">— Световые линии</div>
         <div class="divider"></div>
-        <div class="light-item" onclick="selLight('магнит')">⊕ Магнитная система</div>
+        <div class="light-item" onclick="selLight('магнит')">⊕ Магнитно-трековая система</div>
         <div class="light-qty-block" id="l-qty-block">
           <div class="light-qty-row"><label id="l-label">Количество</label><input type="number" id="l-qty" placeholder="0" step="0.1" inputmode="decimal" oninput="updateLightPreview()"><span class="qty-unit" id="l-unit">шт</span></div>
           <div class="price-preview" id="l-preview"></div>
@@ -421,7 +421,7 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
       <div class="price-row"><label>Точечные светильники</label><input type="number" id="p-lightTochechnye" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
       <div class="price-row"><label>Светильник BH 53</label><input type="number" id="p-lightBH53" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
       <div class="price-row"><label>Световые линии</label><input type="number" id="p-lightLinii" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
-      <div class="price-row"><label>Магнитная система</label><input type="number" id="p-lightMagnit" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>Магнитно-трековая система</label><input type="number" id="p-lightMagnit" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
 
       <div class="section-label">Аксессуары</div>
       <div class="price-row"><label>Вытяжка (без вент.)</label><input type="number" id="p-accVytazhkaBez" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
@@ -452,7 +452,7 @@ var PRICES_DEFAULT={filmMSD:550,filmBAUF:750,profilePlastic:70,profileAluminium:
 var prices=Object.assign({},PRICES_DEFAULT);
 (function(){try{var s=localStorage.getItem('smetra-prices');if(s)Object.assign(prices,JSON.parse(s));}catch(e){}})();
 var profiles,lights,accessories;
-function rebuildTables(){profiles={plastic:{label:'Пластиковый профиль',price:prices.profilePlastic},aluminium:{label:'Алюминиевый профиль',price:prices.profileAluminium},shadow:{label:'Теневой профиль',price:prices.profileShadow}};lights={'споты':{name:'Установка спотов',price:prices.lightSpoty,unit:'шт'},'люстра':{name:'Установка люстры',price:prices.lightLyustra,unit:'шт'},'точечные':{name:'Установка точечных светильников',price:prices.lightTochechnye,unit:'шт'},'bh53':{name:'Установка светильника BH 53',price:prices.lightBH53,unit:'шт'},'линии':{name:'Световые линии',price:prices.lightLinii,unit:'м.п.'},'магнит':{name:'Магнитная система',price:prices.lightMagnit,unit:'м.п.'}};accessories={'вытяжка-без':{name:'Установка теневой вытяжки (без вентилятора)',price:prices.accVytazhkaBez,unit:'шт'},'вытяжка-с':{name:'Установка теневой вытяжки (с вентилятором)',price:prices.accVytazhkaS,unit:'шт'},'шторка':{name:'Шторка для ванны',price:prices.accShtorka,unit:'п.м.'},'решетка':{name:'Вентиляционная решетка декоративная',price:prices.accReshetka,unit:'шт'},'доступ':{name:'Быстрый доступ к блокам питания магнитный',price:prices.accDostup,unit:'шт'}};}
+function rebuildTables(){profiles={plastic:{label:'Пластиковый профиль',price:prices.profilePlastic},aluminium:{label:'Алюминиевый профиль',price:prices.profileAluminium},shadow:{label:'Теневой профиль',price:prices.profileShadow}};lights={'споты':{name:'Установка спотов',price:prices.lightSpoty,unit:'шт'},'люстра':{name:'Установка люстры',price:prices.lightLyustra,unit:'шт'},'точечные':{name:'Установка точечных светильников',price:prices.lightTochechnye,unit:'шт'},'bh53':{name:'Установка светильника BH 53',price:prices.lightBH53,unit:'шт'},'линии':{name:'Световые линии',price:prices.lightLinii,unit:'м.п.'},'магнит':{name:'Магнитно-трековая система',price:prices.lightMagnit,unit:'м.п.'}};accessories={'вытяжка-без':{name:'Установка теневой вытяжки (без вентилятора)',price:prices.accVytazhkaBez,unit:'шт'},'вытяжка-с':{name:'Установка теневой вытяжки (с вентилятором)',price:prices.accVytazhkaS,unit:'шт'},'шторка':{name:'Шторка для ванны',price:prices.accShtorka,unit:'п.м.'},'решетка':{name:'Вентиляционная решетка декоративная',price:prices.accReshetka,unit:'шт'},'доступ':{name:'Быстрый доступ к блокам питания магнитный',price:prices.accDostup,unit:'шт'}};}
 rebuildTables();
 
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='s-send')buildEstimate();}

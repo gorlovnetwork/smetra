@@ -140,6 +140,10 @@ html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .empty-msg{font-size:14px;color:var(--text3);padding:32px 0;text-align:center}
 .custom-inputs{display:flex;gap:8px;margin-bottom:8px}
 .custom-inputs .input-group input{padding:10px 12px;font-size:14px}
+.price-row{display:flex;align-items:center;padding:11px 0;border-bottom:0.5px solid var(--border)}
+.price-row label{flex:1;font-size:14px;color:var(--text2)}
+.price-row input{width:90px;padding:9px 10px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--bg3);color:var(--text);outline:none;-webkit-appearance:none;text-align:right}
+.price-unit{font-size:13px;color:var(--text3);margin-left:8px;white-space:nowrap;min-width:44px}
 @media print{
   :root{--text:#111;--text2:#444;--text3:#777;--border:#ddd;--border2:#bbb}
   body{background:#fff}
@@ -176,7 +180,7 @@ html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSys
     </div>
     <div class="bottom-btns">
       <button class="bottom-btn" onclick="showScreen('s-send')">↗ Отправить</button>
-      <button class="bottom-btn primary" onclick="showScreen('s-send')">✎ Редактировать цены</button>
+      <button class="bottom-btn primary" onclick="openPrices()">✎ Редактировать цены</button>
     </div>
   </div>
 </div>
@@ -270,21 +274,21 @@ html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSys
         </div>
         <div id="c-hint" style="display:none" class="sub-label">Тип карниза</div>
         <div class="type-list" id="tl-parsek">
-          <button class="type-btn" onclick="selCorn(this,'ПарСек ПК-5',3600)">ПК-5<span class="type-price">3 600 ₽/м.п.</span></button>
-          <button class="type-btn" onclick="selCorn(this,'ПарСек ПК-14',3400)">ПК-14<span class="type-price">3 400 ₽/м.п.</span></button>
+          <button class="type-btn" onclick="selCorn(this,'ПарСек ПК-5','cornParsekPK5')">ПК-5<span class="type-price" data-pkey="cornParsekPK5"></span></button>
+          <button class="type-btn" onclick="selCorn(this,'ПарСек ПК-14','cornParsekPK14')">ПК-14<span class="type-price" data-pkey="cornParsekPK14"></span></button>
         </div>
         <div class="type-list" id="tl-flexy">
-          <button class="type-btn" onclick="selCorn(this,'Flexy Гардина 02',3900)">Гардина 02<span class="type-price">3 900 ₽/м.п.</span></button>
+          <button class="type-btn" onclick="selCorn(this,'Flexy Гардина 02','cornFlexyGardina')">Гардина 02<span class="type-price" data-pkey="cornFlexyGardina"></span></button>
         </div>
         <div class="type-list" id="tl-lumfer">
-          <button class="type-btn" onclick="selCorn(this,'Lumfer Uk',3950)">Uk<span class="type-price">3 950 ₽/м.п.</span></button>
-          <button class="type-btn" onclick="selCorn(this,'Lumfer Novus',6100)">Novus<span class="type-price">6 100 ₽/м.п.</span></button>
-          <button class="type-btn" onclick="selCorn(this,'Lumfer Magnum',8200)">Magnum<span class="type-price">8 200 ₽/м.п.</span></button>
+          <button class="type-btn" onclick="selCorn(this,'Lumfer Uk','cornLumferUk')">Uk<span class="type-price" data-pkey="cornLumferUk"></span></button>
+          <button class="type-btn" onclick="selCorn(this,'Lumfer Novus','cornLumferNovus')">Novus<span class="type-price" data-pkey="cornLumferNovus"></span></button>
+          <button class="type-btn" onclick="selCorn(this,'Lumfer Magnum','cornLumferMagnum')">Magnum<span class="type-price" data-pkey="cornLumferMagnum"></span></button>
         </div>
         <div class="qty-block" id="c-qty-block">
           <div class="qty-row"><label>Количество</label><input type="number" id="c-qty" placeholder="0" step="0.1" inputmode="decimal" oninput="updateCornPreview()"><span class="qty-unit">м.п.</span></div>
           <div class="backlight-row">
-            <div><div class="backlight-label">Подсветка в карниз</div><div class="backlight-extra">+1 100 ₽/м.п.</div></div>
+            <div><div class="backlight-label">Подсветка в карниз</div><div class="backlight-extra" id="bl-price">+1 100 ₽/м.п.</div></div>
             <label class="toggle"><input type="checkbox" id="c-bl" onchange="updateCornPreview()"><span class="toggle-slider"></span></label>
           </div>
           <div class="price-preview" id="c-preview"></div>
@@ -375,6 +379,66 @@ html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSys
   </div>
 </div>
 
+<!-- РЕДАКТИРОВАТЬ ЦЕНЫ -->
+<div id="s-prices" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="showScreen('s-main')">←</button>
+    <h2>Редактировать цены</h2>
+  </div>
+  <div class="scroll-body">
+    <div class="form-body">
+      <div class="section-label">Полотно</div>
+      <div class="price-row"><label>MSD</label><input type="number" id="p-filmMSD" inputmode="numeric"><span class="price-unit">₽/м²</span></div>
+      <div class="price-row"><label>BAUF</label><input type="number" id="p-filmBAUF" inputmode="numeric"><span class="price-unit">₽/м²</span></div>
+
+      <div class="section-label">Профиль</div>
+      <div class="price-row"><label>Пластиковый</label><input type="number" id="p-profilePlastic" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>Алюминиевый</label><input type="number" id="p-profileAluminium" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>Теневой</label><input type="number" id="p-profileShadow" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+
+      <div class="section-label">Дополнительно</div>
+      <div class="price-row"><label>Парящий потолок</label><input type="number" id="p-floating" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>Обработка углов</label><input type="number" id="p-corners" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
+
+      <div class="section-label">Карнизы — ПарСек</div>
+      <div class="price-row"><label>ПК-5</label><input type="number" id="p-cornParsekPK5" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>ПК-14</label><input type="number" id="p-cornParsekPK14" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+
+      <div class="section-label">Карнизы — Flexy</div>
+      <div class="price-row"><label>Гардина 02</label><input type="number" id="p-cornFlexyGardina" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+
+      <div class="section-label">Карнизы — Lumfer</div>
+      <div class="price-row"><label>Uk</label><input type="number" id="p-cornLumferUk" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>Novus</label><input type="number" id="p-cornLumferNovus" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>Magnum</label><input type="number" id="p-cornLumferMagnum" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+
+      <div class="section-label">Подсветка</div>
+      <div class="price-row"><label>Подсветка в карниз</label><input type="number" id="p-backlight" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+
+      <div class="section-label">Освещение</div>
+      <div class="price-row"><label>Установка спотов</label><input type="number" id="p-lightSpoty" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
+      <div class="price-row"><label>Установка люстры</label><input type="number" id="p-lightLyustra" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
+      <div class="price-row"><label>Точечные светильники</label><input type="number" id="p-lightTochechnye" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
+      <div class="price-row"><label>Светильник BH 53</label><input type="number" id="p-lightBH53" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
+      <div class="price-row"><label>Световые линии</label><input type="number" id="p-lightLinii" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>Магнитная система</label><input type="number" id="p-lightMagnit" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+
+      <div class="section-label">Аксессуары</div>
+      <div class="price-row"><label>Вытяжка (без вент.)</label><input type="number" id="p-accVytazhkaBez" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
+      <div class="price-row"><label>Вытяжка (с вент.)</label><input type="number" id="p-accVytazhkaS" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
+      <div class="price-row"><label>Шторка для ванны</label><input type="number" id="p-accShtorka" inputmode="numeric"><span class="price-unit">₽/п.м.</span></div>
+      <div class="price-row"><label>Вентиляционная решетка</label><input type="number" id="p-accReshetka" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
+      <div class="price-row"><label>Доступ к блокам питания</label><input type="number" id="p-accDostup" inputmode="numeric"><span class="price-unit">₽/шт</span></div>
+    </div>
+  </div>
+  <div class="footer-bar">
+    <div style="display:flex;gap:8px">
+      <button class="btn-primary" style="flex:1" onclick="savePrices()">✓ Сохранить</button>
+      <button class="bottom-btn" style="padding:14px 18px" onclick="resetPrices()">Сбросить</button>
+    </div>
+  </div>
+</div>
+
 </div>
 <div id="print-area" style="display:none"></div>
 
@@ -383,11 +447,13 @@ var rooms=[];
 var editingIndex=-1;
 var cur={name:'Зал',film:'MSD',profile:'plastic',length:0,width:0,area:0,perim:0,corners:4,floating:0,items:[]};
 var cornType=null,cornPrice=0,lightName=null,lightPrice=0,lightUnit='шт';
-var profiles={plastic:{label:'Пластиковый профиль',price:70},aluminium:{label:'Алюминиевый профиль',price:150},shadow:{label:'Теневой профиль',price:1100}};
-var filmPrices={MSD:550,BAUF:750};
-var lights={'споты':{name:'Установка спотов',price:600,unit:'шт'},'люстра':{name:'Установка люстры',price:1000,unit:'шт'},'точечные':{name:'Установка точечных светильников',price:600,unit:'шт'},'bh53':{name:'Установка светильника BH 53',price:2400,unit:'шт'},'линии':{name:'Световые линии',price:2400,unit:'м.п.'},'магнит':{name:'Магнитная система',price:9100,unit:'м.п.'}};
 var accName=null,accPrice=0,accUnit='шт';
-var accessories={'вытяжка-без':{name:'Установка теневой вытяжки (без вентилятора)',price:4900,unit:'шт'},'вытяжка-с':{name:'Установка теневой вытяжки (с вентилятором)',price:8500,unit:'шт'},'шторка':{name:'Шторка для ванны',price:3200,unit:'п.м.'},'решетка':{name:'Вентиляционная решетка декоративная',price:1200,unit:'шт'},'доступ':{name:'Быстрый доступ к блокам питания магнитный',price:2600,unit:'шт'}};
+var PRICES_DEFAULT={filmMSD:550,filmBAUF:750,profilePlastic:70,profileAluminium:150,profileShadow:1100,floating:2400,corners:400,cornParsekPK5:3600,cornParsekPK14:3400,cornFlexyGardina:3900,cornLumferUk:3950,cornLumferNovus:6100,cornLumferMagnum:8200,backlight:1100,lightSpoty:600,lightLyustra:1000,lightTochechnye:600,lightBH53:2400,lightLinii:2400,lightMagnit:9100,accVytazhkaBez:4900,accVytazhkaS:8500,accShtorka:3200,accReshetka:1200,accDostup:2600};
+var prices=Object.assign({},PRICES_DEFAULT);
+(function(){try{var s=localStorage.getItem('smetra-prices');if(s)Object.assign(prices,JSON.parse(s));}catch(e){}})();
+var profiles,lights,accessories;
+function rebuildTables(){profiles={plastic:{label:'Пластиковый профиль',price:prices.profilePlastic},aluminium:{label:'Алюминиевый профиль',price:prices.profileAluminium},shadow:{label:'Теневой профиль',price:prices.profileShadow}};lights={'споты':{name:'Установка спотов',price:prices.lightSpoty,unit:'шт'},'люстра':{name:'Установка люстры',price:prices.lightLyustra,unit:'шт'},'точечные':{name:'Установка точечных светильников',price:prices.lightTochechnye,unit:'шт'},'bh53':{name:'Установка светильника BH 53',price:prices.lightBH53,unit:'шт'},'линии':{name:'Световые линии',price:prices.lightLinii,unit:'м.п.'},'магнит':{name:'Магнитная система',price:prices.lightMagnit,unit:'м.п.'}};accessories={'вытяжка-без':{name:'Установка теневой вытяжки (без вентилятора)',price:prices.accVytazhkaBez,unit:'шт'},'вытяжка-с':{name:'Установка теневой вытяжки (с вентилятором)',price:prices.accVytazhkaS,unit:'шт'},'шторка':{name:'Шторка для ванны',price:prices.accShtorka,unit:'п.м.'},'решетка':{name:'Вентиляционная решетка декоративная',price:prices.accReshetka,unit:'шт'},'доступ':{name:'Быстрый доступ к блокам питания магнитный',price:prices.accDostup,unit:'шт'}};}
+rebuildTables();
 
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='s-send')buildEstimate();}
 function resetForm(){editingIndex=-1;cur={name:'Зал',film:'MSD',profile:'plastic',length:0,width:0,area:0,perim:0,corners:4,floating:0,items:[]};['r-len','r-wid','r-area','r-perim','r-floating'].forEach(id=>document.getElementById(id).value='');document.getElementById('r-corners').value=4;document.querySelectorAll('.room-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));document.getElementById('film-grid').querySelectorAll('.profile-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));document.querySelectorAll('.profile-grid .profile-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));document.getElementById('corners-block').classList.remove('show');document.getElementById('floating-block').classList.add('show');updatePreview();}
@@ -396,14 +462,14 @@ function selFilm(btn,brand){document.getElementById('film-grid').querySelectorAl
 function selRoom(btn){btn.closest('.room-grid').querySelectorAll('.room-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');cur.name=btn.textContent;}
 function selProfile(btn,type){btn.closest('.profile-grid').querySelectorAll('.profile-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');cur.profile=type;document.getElementById('corners-block').classList.toggle('show',type==='shadow');updatePreview();}
 function calcDims(){const l=parseFloat(document.getElementById('r-len').value)||0,w=parseFloat(document.getElementById('r-wid').value)||0;if(l>0&&w>0){document.getElementById('r-area').value=parseFloat((l*w).toFixed(2));document.getElementById('r-perim').value=parseFloat((2*(l+w)).toFixed(2));}updatePreview();}
-function updatePreview(){const area=parseFloat(document.getElementById('r-area').value)||0,perim=parseFloat(document.getElementById('r-perim').value)||0,corners=parseInt(document.getElementById('r-corners').value)||0,floating=parseFloat(document.getElementById('r-floating').value)||0,pd=profiles[cur.profile],ep=Math.max(0,parseFloat((perim-floating).toFixed(2))),fp=filmPrices[cur.film]||550;let h='';if(area>0)h+=ar('Натяжной потолок '+area+' м²',Math.round(area*fp));if(floating>0)h+=ar('Парящий потолок '+floating+' м.п.',Math.round(floating*2400));if(perim>0){const lbl=floating>0?pd.label+' '+ep+' м.п. ('+perim+'−'+floating+')':pd.label+' '+perim+' м.п.';h+=ar(lbl,Math.round(ep*pd.price));}if(cur.profile==='shadow'&&corners>0)h+=ar('Обработка углов '+corners+' шт',Math.round(corners*400));document.getElementById('auto-lines').innerHTML=h||'<div style="font-size:13px;color:var(--text3)">Введите размеры</div>';}
+function updatePreview(){const area=parseFloat(document.getElementById('r-area').value)||0,perim=parseFloat(document.getElementById('r-perim').value)||0,corners=parseInt(document.getElementById('r-corners').value)||0,floating=parseFloat(document.getElementById('r-floating').value)||0,pd=profiles[cur.profile],ep=Math.max(0,parseFloat((perim-floating).toFixed(2))),fp=cur.film==='BAUF'?prices.filmBAUF:prices.filmMSD;let h='';if(area>0)h+=ar('Натяжной потолок '+area+' м²',Math.round(area*fp));if(floating>0)h+=ar('Парящий потолок '+floating+' м.п.',Math.round(floating*prices.floating));if(perim>0){const lbl=floating>0?pd.label+' '+ep+' м.п. ('+perim+'−'+floating+')':pd.label+' '+perim+' м.п.';h+=ar(lbl,Math.round(ep*pd.price));}if(cur.profile==='shadow'&&corners>0)h+=ar('Обработка углов '+corners+' шт',Math.round(corners*prices.corners));document.getElementById('auto-lines').innerHTML=h||'<div style="font-size:13px;color:var(--text3)">Введите размеры</div>';}
 function ar(n,p){return'<div class="auto-row"><span class="auto-name">'+n+'</span><span class="auto-price">'+p.toLocaleString('ru-RU')+' ₽</span></div>';}
-function goToKit(){const area=parseFloat(document.getElementById('r-area').value)||0,perim=parseFloat(document.getElementById('r-perim').value)||0,corners=parseInt(document.getElementById('r-corners').value)||0,floating=parseFloat(document.getElementById('r-floating').value)||0,ep=Math.max(0,parseFloat((perim-floating).toFixed(2))),pd=profiles[cur.profile];cur.length=parseFloat(document.getElementById('r-len').value)||0;cur.width=parseFloat(document.getElementById('r-wid').value)||0;cur.area=area;cur.perim=perim;cur.corners=corners;cur.floating=floating;const manualItems=cur.items.filter(it=>!it.auto);const fp=filmPrices[cur.film]||550;cur.items=[];if(area>0)cur.items.push({name:'Натяжной потолок '+(cur.film||'MSD'),qty:area+' м²',total:Math.round(area*fp),rate:fp.toLocaleString('ru-RU')+' ₽/м²',auto:true});if(floating>0)cur.items.push({name:'Парящий потолок',qty:floating+' м.п.',total:Math.round(floating*2400),rate:'2 400 ₽/м.п.',auto:true});if(perim>0)cur.items.push({name:pd.label,qty:ep+' м.п.',total:Math.round(ep*pd.price),rate:pd.price.toLocaleString('ru-RU')+' ₽/м.п.',auto:true});if(cur.profile==='shadow'&&corners>0)cur.items.push({name:'Обработка углов',qty:corners+' шт',total:Math.round(corners*400),rate:'400 ₽/шт',auto:true});cur.items.push(...manualItems);document.getElementById('kit-title').textContent=cur.name+' — комплектация';renderKit();showScreen('s-kit');}
+function goToKit(){const area=parseFloat(document.getElementById('r-area').value)||0,perim=parseFloat(document.getElementById('r-perim').value)||0,corners=parseInt(document.getElementById('r-corners').value)||0,floating=parseFloat(document.getElementById('r-floating').value)||0,ep=Math.max(0,parseFloat((perim-floating).toFixed(2))),pd=profiles[cur.profile];cur.length=parseFloat(document.getElementById('r-len').value)||0;cur.width=parseFloat(document.getElementById('r-wid').value)||0;cur.area=area;cur.perim=perim;cur.corners=corners;cur.floating=floating;const manualItems=cur.items.filter(it=>!it.auto);const fp=cur.film==='BAUF'?prices.filmBAUF:prices.filmMSD;cur.items=[];if(area>0)cur.items.push({name:'Натяжной потолок '+(cur.film||'MSD'),qty:area+' м²',total:Math.round(area*fp),rate:fp.toLocaleString('ru-RU')+' ₽/м²',auto:true});if(floating>0)cur.items.push({name:'Парящий потолок',qty:floating+' м.п.',total:Math.round(floating*prices.floating),rate:prices.floating.toLocaleString('ru-RU')+' ₽/м.п.',auto:true});if(perim>0)cur.items.push({name:pd.label,qty:ep+' м.п.',total:Math.round(ep*pd.price),rate:pd.price.toLocaleString('ru-RU')+' ₽/м.п.',auto:true});if(cur.profile==='shadow'&&corners>0)cur.items.push({name:'Обработка углов',qty:corners+' шт',total:Math.round(corners*prices.corners),rate:prices.corners.toLocaleString('ru-RU')+' ₽/шт',auto:true});cur.items.push(...manualItems);document.getElementById('kit-title').textContent=cur.name+' — комплектация';renderKit();showScreen('s-kit');}
 function togglePanel(id){const el=document.getElementById(id),was=el.classList.contains('open');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));if(!was)el.classList.add('open');}
 function selBrand(b){document.querySelectorAll('.brand-btn').forEach(x=>x.classList.remove('selected'));document.getElementById('b-'+b).classList.add('selected');document.querySelectorAll('.type-list').forEach(t=>t.classList.remove('active'));document.getElementById('tl-'+b).classList.add('active');document.getElementById('c-hint').style.display='block';document.getElementById('c-qty-block').style.display='none';document.querySelectorAll('.type-btn').forEach(x=>x.classList.remove('selected'));cornType=null;cornPrice=0;}
-function selCorn(btn,name,price){document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');cornType=name;cornPrice=price;document.getElementById('c-qty-block').style.display='block';document.getElementById('c-qty').value='';document.getElementById('c-bl').checked=false;document.getElementById('c-preview').textContent='';document.getElementById('c-qty').focus();}
-function updateCornPreview(){const qty=parseFloat(document.getElementById('c-qty').value)||0,bl=document.getElementById('c-bl').checked;if(qty>0&&cornType){const u=cornPrice+(bl?1100:0);document.getElementById('c-preview').textContent=qty+' м.п. × '+u.toLocaleString('ru-RU')+' ₽ = '+Math.round(qty*u).toLocaleString('ru-RU')+' ₽';}else document.getElementById('c-preview').textContent='';}
-function addCornice(){const qty=parseFloat(document.getElementById('c-qty').value)||0;if(!cornType||qty<=0)return;const bl=document.getElementById('c-bl').checked,u=cornPrice+(bl?1100:0),name=bl?cornType+' с подсветкой':cornType;addItem(name,qty+' м.п.',Math.round(qty*u),u.toLocaleString('ru-RU')+' ₽/м.п.');document.getElementById('p-cornice').classList.remove('open');document.getElementById('c-qty-block').style.display='none';document.querySelectorAll('.brand-btn,.type-btn').forEach(b=>b.classList.remove('selected'));document.querySelectorAll('.type-list').forEach(t=>t.classList.remove('active'));document.getElementById('c-hint').style.display='none';cornType=null;cornPrice=0;}
+function selCorn(btn,name,priceKey){document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');cornType=name;cornPrice=prices[priceKey];document.getElementById('c-qty-block').style.display='block';document.getElementById('c-qty').value='';document.getElementById('c-bl').checked=false;document.getElementById('c-preview').textContent='';document.getElementById('c-qty').focus();}
+function updateCornPreview(){const qty=parseFloat(document.getElementById('c-qty').value)||0,bl=document.getElementById('c-bl').checked;if(qty>0&&cornType){const u=cornPrice+(bl?prices.backlight:0);document.getElementById('c-preview').textContent=qty+' м.п. × '+u.toLocaleString('ru-RU')+' ₽ = '+Math.round(qty*u).toLocaleString('ru-RU')+' ₽';}else document.getElementById('c-preview').textContent='';}
+function addCornice(){const qty=parseFloat(document.getElementById('c-qty').value)||0;if(!cornType||qty<=0)return;const bl=document.getElementById('c-bl').checked,u=cornPrice+(bl?prices.backlight:0),name=bl?cornType+' с подсветкой':cornType;addItem(name,qty+' м.п.',Math.round(qty*u),u.toLocaleString('ru-RU')+' ₽/м.п.');document.getElementById('p-cornice').classList.remove('open');document.getElementById('c-qty-block').style.display='none';document.querySelectorAll('.brand-btn,.type-btn').forEach(b=>b.classList.remove('selected'));document.querySelectorAll('.type-list').forEach(t=>t.classList.remove('active'));document.getElementById('c-hint').style.display='none';cornType=null;cornPrice=0;}
 function selLight(key){const d=lights[key];lightName=d.name;lightPrice=d.price;lightUnit=d.unit;document.querySelectorAll('.light-item').forEach(i=>i.classList.remove('selected'));event.currentTarget.classList.add('selected');document.getElementById('l-label').textContent=d.name;document.getElementById('l-unit').textContent=d.unit;document.getElementById('l-qty').value='';document.getElementById('l-preview').textContent='';document.getElementById('l-qty-block').style.display='block';document.getElementById('l-qty').focus();}
 function updateLightPreview(){const qty=parseFloat(document.getElementById('l-qty').value)||0;if(qty>0&&lightName)document.getElementById('l-preview').textContent=qty+' '+lightUnit+' × '+lightPrice.toLocaleString('ru-RU')+' ₽ = '+Math.round(qty*lightPrice).toLocaleString('ru-RU')+' ₽';else document.getElementById('l-preview').textContent='';}
 function selAcc(e,key){const d=accessories[key];accName=d.name;accPrice=d.price;accUnit=d.unit;document.querySelectorAll('#p-acc .light-item').forEach(i=>i.classList.remove('selected'));e.currentTarget.classList.add('selected');document.getElementById('a-label').textContent=d.name;document.getElementById('a-unit').textContent=d.unit;document.getElementById('a-qty').value='';document.getElementById('a-preview').textContent='';document.getElementById('a-qty-block').style.display='block';document.getElementById('a-qty').focus();}
@@ -503,8 +569,14 @@ function exportPDF(btn){
   }).catch(()=>{btn.innerHTML=orig;btn.disabled=false;});
 }
 
+function updatePriceDisplays(){document.querySelectorAll('[data-pkey]').forEach(el=>{var k=el.dataset.pkey;if(prices[k]!==undefined)el.textContent=prices[k].toLocaleString('ru-RU')+' ₽/м.п.';});var bl=document.getElementById('bl-price');if(bl)bl.textContent='+'+prices.backlight.toLocaleString('ru-RU')+' ₽/м.п.';}
+function openPrices(){Object.keys(PRICES_DEFAULT).forEach(k=>{var el=document.getElementById('p-'+k);if(el)el.value=prices[k];});showScreen('s-prices');}
+function savePrices(){Object.keys(PRICES_DEFAULT).forEach(k=>{var el=document.getElementById('p-'+k);if(el){var v=parseFloat(el.value);if(v>0)prices[k]=v;}});localStorage.setItem('smetra-prices',JSON.stringify(prices));rebuildTables();updatePriceDisplays();showScreen('s-main');}
+function resetPrices(){if(!confirm('Сбросить все цены до стандартных?'))return;Object.assign(prices,PRICES_DEFAULT);localStorage.removeItem('smetra-prices');rebuildTables();updatePriceDisplays();openPrices();}
+
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));}
 updatePreview();
+updatePriceDisplays();
 </script>
 </body>
 </html>

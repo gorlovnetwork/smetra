@@ -536,7 +536,7 @@ function buildEstimateHTML(){
   h+='<div style="font-size:26px;font-weight:700;color:'+text+';margin-bottom:28px;letter-spacing:-0.5px">'+(companyName||'Компания')+'</div>';
   h+='<div style="border-top:1px solid #c8bfb0;margin-bottom:24px"></div>';
   h+='<div style="font-size:10px;font-weight:600;color:#8c7d6a;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px">Коммерческое предложение</div>';
-  h+='<div style="font-size:22px;font-weight:700;color:'+text+';line-height:1.25;margin-bottom:28px">Монтаж натяжных потолков'+(totalArea>0?' в квартире '+totalArea.toFixed(0)+' м²':'')+'</div>';
+  h+='<div style="font-size:22px;font-weight:700;color:'+text+';line-height:1.25;margin-bottom:28px">Монтаж натяжных потолков</div>';
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;margin-bottom:32px">';
   h+='<div><div style="font-size:11px;font-weight:700;color:'+text+';margin-bottom:4px">Заказчик</div><div style="font-size:12px;color:#5c4a35">'+name+'</div></div>';
   h+='<div><div style="font-size:11px;font-weight:700;color:'+text+';margin-bottom:4px">Дата</div><div style="font-size:12px;color:#5c4a35">'+date+'</div></div>';
@@ -576,11 +576,11 @@ function exportPDF(btn){
     const {jsPDF}=window.jspdf;
     const doc=new jsPDF('p','mm','a4');
     const pw=doc.internal.pageSize.getWidth(),ph=doc.internal.pageSize.getHeight();
-    const m=10,iw=pw-m*2,ih=canvas.height*iw/canvas.width;
-    if(ih<=ph-m*2){
+    const m=0,iw=pw,ih=canvas.height*iw/canvas.width;
+    if(ih<=ph){
       doc.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',m,m,iw,ih);
     } else {
-      const scale=canvas.width/iw,rowH=(ph-m*2)*scale;
+      const scale=canvas.width/iw,rowH=ph*scale;
       let y=0;
       while(y<canvas.height){
         const h2=Math.min(rowH,canvas.height-y);

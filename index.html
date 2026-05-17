@@ -372,6 +372,7 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
       <input type="text" class="client-input" id="client-name" placeholder="Имя клиента" oninput="buildEstimate()">
       <input type="tel" class="client-input" id="client-phone" placeholder="Телефон" inputmode="tel">
       <input type="text" class="client-input" id="client-address" placeholder="Адрес" oninput="buildEstimate()">
+      <input type="text" class="client-input" id="client-deadline" placeholder="Срок выполнения" oninput="buildEstimate()">
       <div class="section-label">Предпросмотр сметы</div>
       <div class="estimate-box" id="estimate-preview"></div>
       <div class="action-btns">
@@ -393,6 +394,8 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
     <div class="form-body">
       <div class="section-label">Компания</div>
       <div class="price-row"><label>Имя компании</label><input type="text" id="p-companyName" placeholder="Название компании" style="width:auto;flex:1;text-align:left"></div>
+      <div class="price-row"><label>Сайт</label><input type="text" id="p-companySite" placeholder="site.ru" style="width:auto;flex:1;text-align:left"></div>
+      <div class="price-row"><label>Телефон</label><input type="tel" id="p-companyPhone" placeholder="+7 (000) 000-00-00" style="width:auto;flex:1;text-align:left"></div>
 
       <div class="section-label">Полотно</div>
       <div class="price-row"><label>MSD</label><input type="number" id="p-filmMSD" inputmode="numeric"><span class="price-unit">₽/м²</span></div>
@@ -453,8 +456,8 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
 <div id="print-area" style="display:none"></div>
 
 <script>
-var companyName='';
-(function(){try{var s=localStorage.getItem('smetra-company');if(s)companyName=s;}catch(e){}})();
+var companyName='',companySite='',companyPhone='';
+(function(){try{var s=localStorage.getItem('smetra-company');if(s){var d=JSON.parse(s);companyName=d.name||'';companySite=d.site||'';companyPhone=d.phone||'';}}catch(e){}})();
 var rooms=[];
 var editingIndex=-1;
 var cur={name:'Зал',film:'MSD',profile:'plastic',length:0,width:0,area:0,perim:0,corners:4,floating:0,items:[]};
@@ -523,32 +526,42 @@ function shareTelegram(){const text=encodeURIComponent(buildText());window.open(
 function buildEstimateHTML(){
   const name=document.getElementById('client-name').value||'Клиент';
   const address=document.getElementById('client-address').value;
+  const deadline=document.getElementById('client-deadline').value;
   const date=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
   const grand=rooms.reduce((s,r)=>s+r.total,0);
-  let h='<div style="font-family:Arial,Helvetica,sans-serif;color:#111;padding:28px 24px;background:#fff;width:360px">';
-  h+='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">';
-  h+='<strong style="font-size:22px;letter-spacing:-0.5px;color:#111">'+(companyName||'Plafon').toUpperCase()+'</strong>';
-  h+='<span style="font-size:12px;color:#888">'+date+'</span></div>';
-  h+='<div style="font-size:13px;color:#555;margin-bottom:'+(address?'4px':'16px')+'">Клиент: '+name+'</div>';
-  if(address)h+='<div style="font-size:12px;color:#777;margin-bottom:16px">Адрес: '+address+'</div>';
-  h+='<div style="border-top:2px solid #111;margin-bottom:20px"></div>';
+  const totalArea=rooms.reduce((s,r)=>s+(r.area||0),0);
+  const bg='#ede8df',accent='#5c4a35',text='#1a1208';
+  let h='<div style="font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:'+bg+';padding:40px 36px;width:420px;min-height:600px;box-sizing:border-box;display:flex;flex-direction:column">';
+  h+='<div style="flex:1">';
+  h+='<div style="font-size:26px;font-weight:700;color:'+text+';margin-bottom:28px;letter-spacing:-0.5px">'+(companyName||'Компания')+'</div>';
+  h+='<div style="border-top:1px solid #c8bfb0;margin-bottom:24px"></div>';
+  h+='<div style="font-size:10px;font-weight:600;color:#8c7d6a;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px">Коммерческое предложение</div>';
+  h+='<div style="font-size:22px;font-weight:700;color:'+text+';line-height:1.25;margin-bottom:28px">Монтаж натяжных потолков'+(totalArea>0?' в квартире '+totalArea.toFixed(0)+' м²':'')+'</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;margin-bottom:32px">';
+  h+='<div><div style="font-size:11px;font-weight:700;color:'+text+';margin-bottom:4px">Заказчик</div><div style="font-size:12px;color:#5c4a35">'+name+'</div></div>';
+  h+='<div><div style="font-size:11px;font-weight:700;color:'+text+';margin-bottom:4px">Дата</div><div style="font-size:12px;color:#5c4a35">'+date+'</div></div>';
+  h+='<div><div style="font-size:11px;font-weight:700;color:'+text+';margin-bottom:4px">Объект</div><div style="font-size:12px;color:#5c4a35">'+(address||'—')+'</div></div>';
+  h+='<div><div style="font-size:11px;font-weight:700;color:'+text+';margin-bottom:4px">Срок</div><div style="font-size:12px;color:#5c4a35">'+(deadline||'—')+'</div></div>';
+  h+='</div>';
   if(rooms.length){
+    h+='<div style="border-top:1px solid #c8bfb0;margin-bottom:16px"></div>';
     rooms.forEach(r=>{
-      h+='<div style="margin-bottom:18px;padding-left:14px;border-left:3px solid #555">';
-      h+='<div style="font-size:13px;font-weight:700;color:#111;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">'+r.name+'</div>';
+      h+='<div style="margin-bottom:14px">';
+      h+='<div style="font-size:11px;font-weight:700;color:'+text+';text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">'+r.name+'</div>';
       r.items.forEach(item=>{
-        h+='<div style="display:flex;justify-content:space-between;font-size:12px;color:#444;margin-bottom:4px;gap:8px">';
-        h+='<span>'+item.name+' <span style="color:#999">'+item.qty+(item.rate?' · '+item.rate:'')+'</span></span>';
-        h+='<span style="white-space:nowrap;flex-shrink:0">'+item.total.toLocaleString('ru-RU')+' ₽</span></div>';
+        h+='<div style="display:flex;justify-content:space-between;font-size:11px;color:#5c4a35;margin-bottom:4px;gap:8px">';
+        h+='<span>'+item.name+(item.qty?' <span style="color:#8c7d6a">'+item.qty+'</span>':'')+'</span>';
+        h+='<span style="white-space:nowrap;flex-shrink:0;font-weight:500">'+item.total.toLocaleString('ru-RU')+' ₽</span></div>';
       });
-      h+='<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:#111;padding-top:8px;margin-top:8px;border-top:1px solid #ddd">';
+      h+='<div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:'+text+';padding-top:6px;margin-top:6px;border-top:1px solid #d5cec4">';
       h+='<span>Итого '+r.name+'</span><span>'+r.total.toLocaleString('ru-RU')+' ₽</span></div></div>';
     });
-    h+='<div style="border-top:2px solid #111;margin-top:4px;padding-top:14px;display:flex;justify-content:space-between;align-items:baseline">';
-    h+='<span style="font-size:14px;font-weight:700;letter-spacing:0.05em">ИТОГО</span>';
-    h+='<span style="font-size:20px;font-weight:700">'+grand.toLocaleString('ru-RU')+' ₽</span></div>';
   }
-  h+='<div style="text-align:center;margin-top:24px;font-size:11px;color:#bbb">Благодарим за сотрудничество!</div>';
+  h+='</div>';
+  h+='<div style="border-top:1px solid #c8bfb0;padding-top:20px;display:flex;justify-content:space-between;align-items:flex-end;margin-top:24px">';
+  h+='<div style="font-size:11px;color:#8c7d6a;line-height:1.7">'+(companySite?companySite+'<br>':'')+(companyPhone||'')+'</div>';
+  h+='<div style="font-size:28px;font-weight:700;color:'+accent+'">'+grand.toLocaleString('ru-RU')+' ₽</div>';
+  h+='</div>';
   h+='</div>';
   return h;
 }
@@ -558,7 +571,7 @@ function exportPDF(btn){
   const pa=document.getElementById('print-area');
   pa.innerHTML=buildEstimateHTML();
   pa.style.cssText='position:absolute;top:-9999px;left:0;display:block;background:#fff';
-  html2canvas(pa,{backgroundColor:'#fff',scale:2,logging:false}).then(canvas=>{
+  html2canvas(pa,{backgroundColor:'#ede8df',scale:2,logging:false}).then(canvas=>{
     pa.style.cssText='display:none';
     const {jsPDF}=window.jspdf;
     const doc=new jsPDF('p','mm','a4');
@@ -585,8 +598,8 @@ function exportPDF(btn){
 }
 
 function updatePriceDisplays(){document.querySelectorAll('[data-pkey]').forEach(el=>{var k=el.dataset.pkey;if(prices[k]!==undefined)el.textContent=prices[k].toLocaleString('ru-RU')+' ₽/м.п.';});var bl=document.getElementById('bl-price');if(bl)bl.textContent='+'+prices.backlight.toLocaleString('ru-RU')+' ₽/м.п.';}
-function openPrices(){Object.keys(PRICES_DEFAULT).forEach(k=>{var el=document.getElementById('p-'+k);if(el)el.value=prices[k];});var cn=document.getElementById('p-companyName');if(cn)cn.value=companyName;showScreen('s-prices');}
-function savePrices(){Object.keys(PRICES_DEFAULT).forEach(k=>{var el=document.getElementById('p-'+k);if(el){var v=parseFloat(el.value);if(v>0)prices[k]=v;}});var cn=document.getElementById('p-companyName');if(cn){companyName=cn.value.trim();localStorage.setItem('smetra-company',companyName);}localStorage.setItem('smetra-prices',JSON.stringify(prices));rebuildTables();updatePriceDisplays();showScreen('s-main');}
+function openPrices(){Object.keys(PRICES_DEFAULT).forEach(k=>{var el=document.getElementById('p-'+k);if(el)el.value=prices[k];});var cn=document.getElementById('p-companyName');if(cn)cn.value=companyName;var cs=document.getElementById('p-companySite');if(cs)cs.value=companySite;var cp=document.getElementById('p-companyPhone');if(cp)cp.value=companyPhone;showScreen('s-prices');}
+function savePrices(){Object.keys(PRICES_DEFAULT).forEach(k=>{var el=document.getElementById('p-'+k);if(el){var v=parseFloat(el.value);if(v>0)prices[k]=v;}});companyName=(document.getElementById('p-companyName')||{}).value||'';companySite=(document.getElementById('p-companySite')||{}).value||'';companyPhone=(document.getElementById('p-companyPhone')||{}).value||'';localStorage.setItem('smetra-company',JSON.stringify({name:companyName,site:companySite,phone:companyPhone}));localStorage.setItem('smetra-prices',JSON.stringify(prices));rebuildTables();updatePriceDisplays();showScreen('s-main');}
 function resetPrices(){if(!confirm('Сбросить все цены до стандартных?'))return;Object.assign(prices,PRICES_DEFAULT);localStorage.removeItem('smetra-prices');rebuildTables();updatePriceDisplays();openPrices();}
 
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));}

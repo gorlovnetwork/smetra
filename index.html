@@ -279,6 +279,9 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
         </div>
         <div class="type-list" id="tl-flexy">
           <button class="type-btn" onclick="selCorn(this,'Flexy Gardina2 05','cornFlexyGardina')">Gardina2 05<span class="type-price" data-pkey="cornFlexyGardina"></span></button>
+          <button class="type-btn" onclick="selCorn(this,'Borzz Karniz 45','cornBorzzK45')">Borzz Karniz 45<span class="type-price" data-pkey="cornBorzzK45"></span></button>
+          <button class="type-btn" onclick="selCorn(this,'Borzz Karniz P45','cornBorzzP45')">Borzz Karniz P45<span class="type-price" data-pkey="cornBorzzP45"></span></button>
+          <button class="type-btn" onclick="selCorn(this,'Borzz Karniz P65','cornBorzzP65')">Borzz Karniz P65<span class="type-price" data-pkey="cornBorzzP65"></span></button>
         </div>
         <div class="type-list" id="tl-lumfer">
           <button class="type-btn" onclick="selCorn(this,'Lumfer Uk','cornLumferUk')">Uk<span class="type-price" data-pkey="cornLumferUk"></span></button>
@@ -406,6 +409,9 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
 
       <div class="section-label">Карнизы — Flexy</div>
       <div class="price-row"><label>Gardina2 05</label><input type="number" id="p-cornFlexyGardina" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>Borzz Karniz 45</label><input type="number" id="p-cornBorzzK45" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>Borzz Karniz P45</label><input type="number" id="p-cornBorzzP45" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
+      <div class="price-row"><label>Borzz Karniz P65</label><input type="number" id="p-cornBorzzP65" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
 
       <div class="section-label">Карнизы — Lumfer</div>
       <div class="price-row"><label>Uk</label><input type="number" id="p-cornLumferUk" inputmode="numeric"><span class="price-unit">₽/м.п.</span></div>
@@ -448,7 +454,7 @@ var editingIndex=-1;
 var cur={name:'Зал',film:'MSD',profile:'plastic',length:0,width:0,area:0,perim:0,corners:4,floating:0,items:[]};
 var cornType=null,cornPrice=0,lightName=null,lightPrice=0,lightUnit='шт';
 var accName=null,accPrice=0,accUnit='шт';
-var PRICES_DEFAULT={filmMSD:550,filmBAUF:750,profilePlastic:70,profileAluminium:150,profileShadow:1100,floating:2400,corners:400,cornParsekPK5:3600,cornParsekPK14:3400,cornFlexyGardina:3900,cornLumferUk:3950,cornLumferNovus:6100,cornLumferMagnum:8200,backlight:1100,lightSpoty:600,lightLyustra:1000,lightTochechnye:600,lightBH53:2400,lightLinii:2400,lightMagnit:9100,accVytazhkaBez:4900,accVytazhkaS:8500,accShtorka:3200,accReshetka:1200,accDostup:2600};
+var PRICES_DEFAULT={filmMSD:550,filmBAUF:750,profilePlastic:70,profileAluminium:150,profileShadow:1100,floating:2400,corners:400,cornParsekPK5:3600,cornParsekPK14:3400,cornFlexyGardina:3900,cornBorzzK45:3500,cornBorzzP45:5200,cornBorzzP65:7300,cornLumferUk:3950,cornLumferNovus:6100,cornLumferMagnum:8200,backlight:1100,lightSpoty:600,lightLyustra:1000,lightTochechnye:600,lightBH53:2400,lightLinii:2400,lightMagnit:9100,accVytazhkaBez:4900,accVytazhkaS:8500,accShtorka:3200,accReshetka:1200,accDostup:2600};
 var prices=Object.assign({},PRICES_DEFAULT);
 (function(){try{var s=localStorage.getItem('smetra-prices');if(s)Object.assign(prices,JSON.parse(s));}catch(e){}})();
 var profiles,lights,accessories;

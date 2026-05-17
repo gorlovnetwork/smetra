@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Plafon">
+  <defs>
+    <radialGradient id="glow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#6A5236" stop-opacity="1"></stop>
+      <stop offset="55%" stop-color="#9B7A55" stop-opacity="0.5"></stop>
+      <stop offset="100%" stop-color="#9B7A55" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="225" ry="225" fill="#F2EBDF"></rect>
+  <circle cx="512" cy="512" r="340" fill="none" stroke="#6A5236" stroke-width="24"></circle>
+  <circle cx="512" cy="512" r="270" fill="url(#glow2)"></circle>
+  <circle cx="512" cy="512" r="80" fill="#6A5236"></circle>
+</svg>

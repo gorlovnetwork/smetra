@@ -579,7 +579,9 @@ function exportPDF(btn){
     const usableH=ph-mT-mB; // рабочая высота страницы в мм
     const rowH=usableH*scale; // рабочая высота в пикселях canvas
     const ih=canvas.height/scale; // полная высота контента в мм
+    const fillBg=()=>{doc.setFillColor(237,232,223);doc.rect(0,0,pw,ph,'F');};// #ede8df
     if(ih<=usableH){
+      fillBg();
       doc.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,mT,iw,ih);
     } else {
       let y=0,first=true;
@@ -589,6 +591,7 @@ function exportPDF(btn){
         tmp.width=canvas.width;tmp.height=h2;
         tmp.getContext('2d').drawImage(canvas,0,y,canvas.width,h2,0,0,canvas.width,h2);
         if(!first)doc.addPage();
+        fillBg();
         doc.addImage(tmp.toDataURL('image/jpeg',0.92),'JPEG',0,mT,iw,h2/scale);
         y+=h2;first=false;
       }

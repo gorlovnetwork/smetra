@@ -137,6 +137,10 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
 .action-btn{flex:1;padding:13px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);cursor:pointer;font-size:13px;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:5px;-webkit-appearance:none}
 .action-btn.primary{background:#6B5947;color:#e8ddd0;border-color:#6B5947;font-weight:600}
 .client-input{width:100%;padding:12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--bg2);color:var(--text);margin-bottom:12px;outline:none;-webkit-appearance:none}
+.deadline-wrap{position:relative;width:100%;padding:12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--bg2);color:var(--text);margin-bottom:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;min-height:46px}
+.deadline-placeholder{color:var(--text3)}
+.deadline-value{color:var(--text)}
+.deadline-icon{color:var(--text3);font-size:16px;flex-shrink:0}
 .empty-msg{font-size:14px;color:var(--text3);padding:32px 0;text-align:center}
 .custom-inputs{display:flex;gap:8px;margin-bottom:8px}
 .custom-inputs .input-group input{padding:10px 12px;font-size:14px}
@@ -372,7 +376,11 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
       <input type="text" class="client-input" id="client-name" placeholder="Имя клиента" oninput="buildEstimate()">
       <input type="tel" class="client-input" id="client-phone" placeholder="Телефон" inputmode="tel">
       <input type="text" class="client-input" id="client-address" placeholder="Адрес" oninput="buildEstimate()">
-      <input type="text" class="client-input" id="client-deadline" placeholder="Срок выполнения" oninput="buildEstimate()">
+      <div class="deadline-wrap" onclick="document.getElementById('client-deadline-picker').showPicker()">
+        <span id="client-deadline-display" class="deadline-placeholder">Срок выполнения</span>
+        <span class="deadline-icon">&#x1F4C5;</span>
+        <input type="date" id="client-deadline-picker" onchange="onDeadlineChange()" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0">
+      </div>
       <div class="section-label">Предпросмотр сметы</div>
       <div class="estimate-box" id="estimate-preview"></div>
       <div class="action-btns">
@@ -500,6 +508,19 @@ function renderRooms(){const c=document.getElementById('rooms-container');c.inne
 function delRoom(i){rooms.splice(i,1);renderRooms();updateTotal();}
 function updateTotal(){document.getElementById('grand-total').textContent=rooms.reduce((s,r)=>s+r.total,0).toLocaleString('ru-RU')+' ₽';}
 
+function onDeadlineChange(){
+  var v=document.getElementById('client-deadline-picker').value;
+  var el=document.getElementById('client-deadline-display');
+  if(v){
+    var d=new Date(v+'T00:00:00');
+    el.textContent=d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+    el.className='deadline-value';
+  } else {
+    el.textContent='Срок выполнения';
+    el.className='deadline-placeholder';
+  }
+  buildEstimate();
+}
 function buildEstimate(){
   const name=document.getElementById('client-name').value||'Клиент';
   const date=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
@@ -526,7 +547,8 @@ function shareTelegram(){const text=encodeURIComponent(buildText());window.open(
 function buildEstimateHTML(){
   const name=document.getElementById('client-name').value||'Клиент';
   const address=document.getElementById('client-address').value;
-  const deadline=document.getElementById('client-deadline').value;
+  const deadlineEl=document.getElementById('client-deadline-display');
+  const deadline=(deadlineEl&&deadlineEl.className==='deadline-value')?deadlineEl.textContent:'';
   const date=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
   const grand=rooms.reduce((s,r)=>s+r.total,0);
   const totalArea=rooms.reduce((s,r)=>s+(r.area||0),0);

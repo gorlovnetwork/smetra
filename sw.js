@@ -1,4 +1,4 @@
-const CACHE = 'smetra-v3';
+const CACHE = 'smetra-v4';
 const FILES = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {

@@ -302,17 +302,17 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
       <button class="add-section-btn" onclick="togglePanel('p-light')">Добавить освещение</button>
       <div class="panel" id="p-light">
         <div class="sub-label">Установка освещения</div>
-        <div class="light-item" onclick="selLight('споты')">☀ Установка спотов</div>
+        <div class="light-item" onclick="selLight('споты')">◎ Установка спотов</div>
         <div class="divider"></div>
-        <div class="light-item" onclick="selLight('люстра')">💡 Установка люстры</div>
+        <div class="light-item" onclick="selLight('люстра')">◎ Установка люстры</div>
         <div class="divider"></div>
         <div class="light-item" onclick="selLight('точечные')">◎ Установка точечных светильников</div>
         <div class="divider"></div>
         <div class="light-item" onclick="selLight('bh53')">◎ Установка светильника BH 53</div>
         <div class="sub-label" style="margin-top:8px">Системы</div>
-        <div class="light-item" onclick="selLight('линии')">— Световые линии</div>
+        <div class="light-item" onclick="selLight('линии')">◎ Световые линии</div>
         <div class="divider"></div>
-        <div class="light-item" onclick="selLight('магнит')">⊕ Магнитно-трековая система</div>
+        <div class="light-item" onclick="selLight('магнит')">◎ Магнитно-трековая система</div>
         <div class="light-qty-block" id="l-qty-block">
           <div class="light-qty-row"><label id="l-label">Количество</label><input type="number" id="l-qty" placeholder="0" step="0.1" inputmode="decimal" oninput="updateLightPreview()"><span class="qty-unit" id="l-unit">шт</span></div>
           <div class="price-preview" id="l-preview"></div>

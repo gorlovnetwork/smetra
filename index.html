@@ -376,10 +376,10 @@ html,body{height:100%;overflow-x:hidden;background:var(--bg);font-family:-apple-
       <input type="text" class="client-input" id="client-name" placeholder="Имя клиента" oninput="buildEstimate()">
       <input type="tel" class="client-input" id="client-phone" placeholder="Телефон" inputmode="tel">
       <input type="text" class="client-input" id="client-address" placeholder="Адрес" oninput="buildEstimate()">
-      <div class="deadline-wrap" onclick="document.getElementById('client-deadline-picker').showPicker()">
+      <div class="deadline-wrap">
         <span id="client-deadline-display" class="deadline-placeholder">Срок выполнения</span>
         <span class="deadline-icon">&#x1F4C5;</span>
-        <input type="date" id="client-deadline-picker" onchange="onDeadlineChange()" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0">
+        <input type="date" id="client-deadline-picker" onchange="onDeadlineChange()" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer">
       </div>
       <div class="section-label">Предпросмотр сметы</div>
       <div class="estimate-box" id="estimate-preview"></div>
